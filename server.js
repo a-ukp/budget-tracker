@@ -24,6 +24,7 @@ mongoose.connect("mongodb://localhost/budget", {
 app.use(require("./routes/api.js"));
 app.use(require("./routes/view.js"));
 
-app.listen(PORT, () => {
+// adding process.env.PORT here solved heroku error H10
+app.listen(process.env.PORT || PORT, () => {
   console.log(`App running on port ${PORT}!`);
 });
