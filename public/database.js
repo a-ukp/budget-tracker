@@ -18,6 +18,29 @@ request.onsuccess = (event) => {
     }
 };
 
-(checkDB) => {
-    var 
+function checkDB() {
+    var transaction = db.transaction(['BudgetStore'], 'readwrite');
+    const BudgetStoreObj = transaction.objectStore('BudgetStore');
+    var getAll = BudgetStoreObj.getAll();
+
+    getAll.onsuccess = function () {
+        if (getAll.result.length > 0) {
+          fetch('/api/transaction/bulk', {
+            method: 'POST',
+            body: JSON.stringify(getAll.result),
+            headers: {
+              Accept: 'application/json, text/plain, */*',
+              'Content-Type': 'application/json',
+            },
+          })
+            .then((response) => response.json())
+            .then(() => {
+              var transaction = db.transaction(['BudgetStore'], 'readwrite');
+              const BudgetStoreObj = transaction.objectStore('BudgetStore');
+              BudgetStoreObj.clear();
+            });
+        }
+      };
 }
+
+window.addEventListener('online', checkDB);
